@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kizmit TCG — vs Computer</title>
+<style>
+  :root {
+    --bg: #f4f2ee; --panel: #ffffff; --ink: #1d1b19; --muted: #6b665f; --line: #d9d4cc;
+    --accent: #2f5bd3; --accent-soft: #e5ecff; --you: #2f5bd3; --opp: #c2410c; --good: #15803d; --bad: #b91c1c;
+    --gold: #d4a017;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
+  h1 { font: 700 20px Georgia, serif; margin: 0; }
+  h2 { font: 700 13px "Segoe UI", sans-serif; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 6px; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 7px 12px;
+    border-radius: 8px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  header { display: flex; align-items: center; gap: 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  header .status { margin-left: auto; font-weight: 600; }
+  .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 14px; padding: 14px 16px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .side { display: flex; flex-direction: column; gap: 12px; }
+  #board-wrap { overflow: auto; display: flex; justify-content: center; align-items: flex-start; }
+  #board { display: block; }
+  .cell { cursor: default; }
+  .cell.target { cursor: pointer; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  .actions .hint { color: var(--muted); font-size: 13px; }
+  .hand { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 10px; }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: #fffdf9; font-size: 12.5px; }
+  .card.instant { border-style: dashed; }
+  .card.playable { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; cursor: pointer; }
+  .card.selected { background: var(--accent-soft); }
+  .card .top { display: flex; justify-content: space-between; gap: 6px; font-weight: 700; font-size: 13px; }
+  .card .meta { color: var(--muted); font-size: 11.5px; margin: 2px 0 4px; }
+  .card .trig { font-style: italic; }
+  .cost { display: inline-flex; gap: 3px; align-items: center; white-space: nowrap; }
+  .gen { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 17px; border: 1px solid #555;
+    border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .pip { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.35); font-size: 10px; font-weight: 700; color: #111; }
+  .sheet .row { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; border-bottom: 1px dotted var(--line); }
+  .sheet .row:last-child { border-bottom: 0; }
+  .sheet .k { color: var(--muted); }
+  .sheet .hidden { color: var(--muted); font-style: italic; }
+  .bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; margin-top: 3px; }
+  .bar > div { height: 100%; background: var(--good); }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+  .chip { display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--line); font-size: 12px; }
+  .chip i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 1px solid rgba(0,0,0,.3); }
+  #log { height: 260px; overflow-y: auto; font-size: 13px; }
+  #log div { padding: 2px 0; border-bottom: 1px solid #f1eee9; }
+  #log .you { color: var(--you); } #log .opp { color: var(--opp); } #log .hit { color: var(--bad); }
+  #log .win { color: var(--good); font-weight: 700; } #log .lose { color: var(--bad); font-weight: 700; }
+  #log .r { color: var(--muted); font-size: 11px; margin-right: 6px; }
+  #log .turn { color: var(--ink); font-weight: 700; border-bottom: 0; padding-top: 8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .lg { display: inline-block; width: 14px; height: 14px; border-radius: 3px; }
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1d1b19; color: #fff;
+    padding: 9px 16px; border-radius: 8px; font-size: 13.5px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 9; }
+  #toast.show { opacity: .94; }
+  .turnbar { font-weight: 700; padding: 8px 10px; border-radius: 8px; margin-bottom: 10px; text-align: center; }
+  .turnbar.mine { background: var(--accent-soft); color: var(--accent); }
+  .turnbar.theirs { background: #f6eee8; color: var(--opp); }
+  .overlay { position: fixed; inset: 0; background: rgba(20,18,16,.55); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 5; }
+  .dialog { background: var(--panel); border-radius: 12px; padding: 20px; width: min(720px, 100%); max-height: 90vh; overflow: auto; }
+  .pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 8px 0 14px; }
+  .pick label { border: 1px solid var(--line); border-radius: 8px; padding: 8px; cursor: pointer; display: block; }
+  .pick input { margin-right: 6px; }
+  .pick label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .small { font-size: 12.5px; color: var(--muted); }
+  details summary { cursor: pointer; font-weight: 600; }
+  details ul { margin: 6px 0 0 18px; padding: 0; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kizmit TCG</h1>
+  <span class="small" id="sub">vs the computer</span>
+  <span class="status" id="status"></span>
+  <button id="btn-new">New game</button>
+</header>
+
+<div class="wrap">
+  <main>
+    <div class="panel">
+      <div class="turnbar" id="turnbar"></div>
+      <div id="board-wrap"><svg id="board"></svg></div>
+      <div class="legend">
+        <span><span class="lg" style="background:#1d1b19;border-radius:50%;width:10px;height:10px"></span>a square you can move to</span>
+        <span><span class="lg" style="border:3px solid var(--gold)"></span>a target for the selected card</span>
+        <span><span class="lg" style="background:repeating-linear-gradient(45deg,#999 0 2px,#fff 2px 6px)"></span>rough: entering ends a move</span>
+        <span>⚑ claimable land</span>
+        <span><span class="lg" style="border:2px solid #2b2622"></span>one land card = 2 squares</span>
+        <span><span class="lg" style="background:var(--you);border-radius:50%"></span>your token</span>
+        <span><span class="lg" style="background:var(--opp)"></span>their token</span>
+      </div>
+      <div class="actions" id="actions"></div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <h2>Your hand</h2>
+      <div class="hand" id="hand"></div>
+    </div>
+  </main>
+  <aside class="side">
+    <div class="panel sheet" id="me"></div>
+    <div class="panel sheet" id="them"></div>
+    <div class="panel"><h2>Game log</h2><div id="log"></div></div>
+    <div class="panel">
+      <details>
+        <summary>Quick rules &amp; prototype notes</summary>
+        <ul class="small">
+          <li>Each turn: draw, score 1 point per land holding your token, then take <b><span id="apt">2</span> actions</b>.</li>
+          <li>Actions: <b>move</b> (click a dot), <b>gather</b> ink (2 on your own ink, else 1), <b>rest</b><span id="restnote"> to draw a card</span>, <b>claim</b> a flagged land you stand on, <b>clear</b> an enemy token you stand on<span id="clearnote"></span>, or <b>cast</b> a sorcery (click a highlighted card).</li>
+          <li>Rough terrain (hatched) ends a move. Starting on your own ink gives +1 square.</li>
+          <li>Casting a spell reveals part of your sheet; the opponent's sheet fills in as they cast.</li>
+          <li>Win: knockout, or <span id="tgt">15</span> holding points. Both decks empty → most points wins.</li>
+          <li><b>Prototype limits:</b> the board is built automatically; your reactions (dashed cards) fire automatically when triggered; the computer peeks at your hand when judging danger.</li>
+        </ul>
+      </details>
+    </div>
+  </aside>
+</div>
+
+<div class="overlay" id="start" style="display:none">
+  <div class="dialog">
+    <h1>New game</h1>
+    <p class="small">Pick your character. Your opponent is hidden unless you choose one, so its sheet starts face down.</p>
+    <h2>You play</h2>
+    <div class="pick" id="pick-you"></div>
+    <h2>Opponent</h2>
+    <div class="pick" id="pick-opp"></div>
+    <h2>Difficulty</h2>
+    <div class="pick" id="pick-level"></div>
+    <button class="primary" id="btn-start">Start</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="overlay" id="end" style="display:none">
+  <div class="dialog" id="end-body"></div>
+</div>
+
+<script>
+const CELL = 56;
+let state = null, roster = [], selected = null, resting = false, busy = false;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const INIT = {White:"W",Red:"R",Orange:"O",Yellow:"Y",Green:"G",Blue:"B",Indigo:"I",Purple:"P",Pink:"K",Wild:"*"};
+
+async function api(path, body) {
+  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
+  return r.json();
+}
+
+function inkColor(ink) { return (state && state.ink_colors[ink]) || "#ccc"; }
+function pip(ink) { return `<span class="pip" style="background:${inkColor(ink)}" title="${ink}">${INIT[ink]||"?"}</span>`; }
+function cost(c) {
+  let h = c.generic ? `<span class="gen">${c.generic}</span>` : "";
+  for (const p of c.pips) h += pip(p);
+  return `<span class="cost">${h || '<span class="gen">0</span>'}</span>`;
+}
+function chips(pool) {
+  const e = Object.entries(pool).filter(([,n]) => n > 0);
+  if (!e.length) return '<span class="small">none</span>';
+  return '<span class="chips">' + e.map(([k,n]) => `<span class="chip"><i style="background:${inkColor(k)}"></i>${k} ${n}</span>`).join("") + "</span>";
+}
+
+// ── board ──────────────────────────────────────────────────────────────────
+function renderBoard() {
+  const svg = $("board");
+  const xs = state.cells.map(c => c.x), ys = state.cells.map(c => c.y);
+  const minx = Math.min(...xs) - 0.5, miny = Math.min(...ys) - 0.5;
+  const w = (Math.max(...xs) - minx + 1.5) * CELL, h = (Math.max(...ys) - miny + 1.5) * CELL;
+  svg.setAttribute("width", w); svg.setAttribute("height", h);
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  const X = x => (x - minx) * CELL, Y = y => (y - miny) * CELL;
+
+  const targets = new Map();       // "x,y" -> list of legal action indices
+  const moveDots = new Set();
+  for (const a of state.legal) {
+    if (selected ? a.card === selected : a.kind === "move") {
+      for (const c of a.cells) {
+        const k = c[0] + "," + c[1];
+        if (!targets.has(k)) targets.set(k, []);
+        targets.get(k).push(a.i);
+        if (!selected) moveDots.add(k);
+      }
+    }
+  }
+
+  let out = `<defs><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="7" stroke="rgba(0,0,0,.35)" stroke-width="2"/></pattern></defs>`;
+  for (const c of state.cells) {
+    const k = c.x + "," + c.y, t = targets.has(k);
+    out += `<g class="cell${t ? " target" : ""}" data-k="${k}">
+      <rect x="${X(c.x)}" y="${Y(c.y)}" width="${CELL}" height="${CELL}" fill="${inkColor(c.ink)}" fill-opacity=".55" stroke="#fff" stroke-width="1"/>
+      ${c.rough ? `<rect x="${X(c.x)}" y="${Y(c.y)}" width="${CELL}" height="${CELL}" fill="url(#hatch)"/>` : ""}
+      <text x="${X(c.x)+4}" y="${Y(c.y)+12}" font-size="10" font-weight="700" fill="rgba(0,0,0,.55)">${INIT[c.ink]}</text>
+      <text x="${X(c.x)+CELL-4}" y="${Y(c.y)+CELL-4}" font-size="8.5" text-anchor="end" fill="rgba(0,0,0,.5)">${c.terrain.slice(0,4)}</text>
+      ${c.claim ? `<text x="${X(c.x)+CELL-5}" y="${Y(c.y)+14}" font-size="13" text-anchor="end">⚑</text>` : ""}
+    </g>`;
+  }
+  for (const L of state.lands) {   // one land card = two squares: thick outline
+    const x0 = Math.min(L[0][0], L[1][0]), y0 = Math.min(L[0][1], L[1][1]);
+    const cw = (Math.abs(L[0][0]-L[1][0]) + 1) * CELL, ch = (Math.abs(L[0][1]-L[1][1]) + 1) * CELL;
+    out += `<rect x="${X(x0)+1.5}" y="${Y(y0)+1.5}" width="${cw-3}" height="${ch-3}" fill="none" stroke="#2b2622" stroke-width="2.4" rx="3" pointer-events="none"/>`;
+  }
+  const drawn = new Set();
+  for (const c of state.cells) {   // tokens: one per land
+    if (!c.token || drawn.has(c.land)) continue;
+    drawn.add(c.land);
+    const cx = X(c.x) + CELL/2, cy = Y(c.y) + CELL/2 + 14;
+    const col = c.token === "you" ? "var(--you)" : "var(--opp)";
+    out += c.token === "you"
+      ? `<circle cx="${cx}" cy="${cy}" r="8" fill="${col}" ${c.frozen ? 'fill-opacity=".35" stroke-dasharray="3 2"' : ""} stroke="#fff" stroke-width="1.5" pointer-events="none"/>`
+      : `<rect x="${cx-8}" y="${cy-8}" width="16" height="16" fill="${col}" ${c.frozen ? 'fill-opacity=".35"' : ""} stroke="#fff" stroke-width="1.5" pointer-events="none"/>`;
+  }
+  for (const k of targets.keys()) {
+    const [x, y] = k.split(",").map(Number);
+    out += moveDots.has(k)
+      ? `<circle cx="${X(x)+CELL/2}" cy="${Y(y)+CELL/2}" r="7" fill="#1d1b19" fill-opacity=".75" pointer-events="none"/>`
+      : `<rect x="${X(x)+4}" y="${Y(y)+4}" width="${CELL-8}" height="${CELL-8}" fill="none" stroke="var(--gold)" stroke-width="3.5" rx="5" pointer-events="none"/>`;
+  }
+  const pawn = (pos, who) => {
+    const cx = X(pos[0]) + CELL/2, cy = Y(pos[1]) + CELL/2;
+    return who === "you"
+      ? `<circle cx="${cx}" cy="${cy}" r="15" fill="#fff" stroke="var(--you)" stroke-width="4" pointer-events="none"/><text x="${cx}" y="${cy+4}" font-size="11" font-weight="800" text-anchor="middle" fill="var(--you)" pointer-events="none">YOU</text>`
+      : `<rect x="${cx-15}" y="${cy-15}" width="30" height="30" rx="4" fill="#fff" stroke="var(--opp)" stroke-width="4" pointer-events="none"/><text x="${cx}" y="${cy+4}" font-size="12" font-weight="800" text-anchor="middle" fill="var(--opp)" pointer-events="none">OPP</text>`;
+  };
+  out += pawn(state.opp.pos, "opp") + pawn(state.you.pos, "you");
+  svg.innerHTML = out;
+  const myKey = state.you.pos[0] + "," + state.you.pos[1];
+  svg.querySelectorAll(".cell").forEach(g => g.addEventListener("click", () => {
+    const list = targets.get(g.dataset.k);
+    if (list && list.length) return act(list[0]);
+    if (!state.my_turn) return toast("Wait for the opponent's turn to finish.");
+    if (g.dataset.k === myKey) return toast(selected ? "Pick one of the gold-outlined squares." :
+      "That's you. Click a dot to move, or use a button or card below.");
+    toast(selected ? "That square isn't a target for this card." : "You can't move there this action.");
+  }));
+}
+
+// ── panels ─────────────────────────────────────────────────────────────────
+function renderSheet(el, s, mine) {
+  const inks = [0, 1].map(i => s.inks[i] ? `${pip(s.inks[i])} ${s.inks[i]}` : '<span class="hidden">face down</span>');
+  const hp = s.max_hp ? `${s.hp} / ${s.max_hp}<div class="bar"><div style="width:${Math.max(0, 100 * s.hp / s.max_hp)}%"></div></div>`
+                      : `<span class="hidden">max unknown</span> · ${s.damage} damage taken`;
+  el.innerHTML = `<h2>${mine ? "Your sheet" : "Opponent's sheet"}</h2>
+    <div class="row"><span class="k">Character</span><span>${s.character ? esc(s.character) : '<span class="hidden">face down</span>'}</span></div>
+    <div class="row"><span class="k">Race</span><span>${s.race ? `${esc(s.race)} · ${esc(s.movement)}` : '<span class="hidden">face down</span>'}</span></div>
+    ${s.race ? `<div class="row small"><span>${esc(s.movement_text)}</span></div>
+      <div class="row small"><span><b>${esc(s.trait.name)}:</b> ${esc(s.trait.text)}</span></div>` : ""}
+    <div class="row"><span class="k">Inks</span><span>${inks.join(" &nbsp; ")}</span></div>
+    <div class="row"><span class="k">HP</span><span style="text-align:right;min-width:150px">${hp}</span></div>
+    <div class="row"><span class="k">Holding points</span><span><b>${s.pts}</b> / ${state.target}</span></div>
+    <div class="row"><span class="k">Ink pool</span>${chips(s.ink)}</div>
+    <div class="row"><span class="k">${mine ? "Deck" : "Hand · deck"}</span><span>${mine ? s.deck_count + " left" : s.hand_count + " cards · " + s.deck_count + " left"}</span></div>`;
+}
+
+function renderHand() {
+  const playable = resting ? new Set(state.legal.filter(a => a.bottom).map(a => a.bottom))
+                           : new Set(state.legal.filter(a => a.card).map(a => a.card));
+  $("hand").innerHTML = state.hand.map((c, n) => {
+    const cls = ["card", c.speed === "Instant" ? "instant" : "", playable.has(c.id) ? "playable" : "", selected === c.id ? "selected" : ""].join(" ");
+    return `<div class="${cls}" data-id="${c.id}">
+      <div class="top"><span>${esc(c.name)}</span>${cost(c)}</div>
+      <div class="meta">${c.speed} · ${esc(c.type)} · ${esc(c.range)}${c.restriction ? " · " + esc(c.restriction) : ""}</div>
+      ${c.trigger ? `<div class="trig">Trigger: ${esc(c.trigger)}</div>` : ""}
+      <div>${esc(c.text)}</div>
+      ${c.speed === "Instant" ? '<div class="small">Reaction: fires automatically.</div>' : ""}
+    </div>`;
+  }).join("") || '<span class="small">Your hand is empty.</span>';
+  $("hand").querySelectorAll(".card.playable").forEach(el => el.addEventListener("click", () => pickCard(el.dataset.id)));
+}
+
+function pickCard(id) {
+  if (resting) {
+    const r = state.legal.find(a => a.kind === "rest" && a.bottom === id);
+    if (r) act(r.i);
+    return;
+  }
+  const opts = state.legal.filter(a => a.card === id);
+  if (!opts.length) return;
+  selected = selected === id ? null : id;
+  render();
+}
+
+function renderActions() {
+  const box = $("actions");
+  if (state.over) { box.innerHTML = '<span class="hint">Game over.</span>'; return; }
+  if (!state.my_turn) { box.innerHTML = '<span class="hint">The computer is thinking…</span>'; return; }
+  const by = k => state.legal.filter(a => a.kind === k);
+  let h = `<span class="hint"><b>${state.actions_left}</b> action${state.actions_left === 1 ? "" : "s"} left.</span>`;
+  if (resting) {
+    h += `<span class="hint">Click a highlighted card to put it on the bottom of your deck; then you draw.</span>`;
+    h += `<button data-cancel="1">Cancel</button>`;
+  } else if (selected) {
+    const opts = state.legal.filter(a => a.card === selected);
+    const name = state.hand.find(c => c.id === selected)?.name || "";
+    if (opts.length === 1 && !opts[0].cells.length) {
+      h += `<button class="primary" data-i="${opts[0].i}">Cast ${esc(name)}</button>`;
+    } else {
+      h += `<span class="hint">Click a gold-outlined square to cast ${esc(name)}.</span>`;
+    }
+    h += `<button data-cancel="1">Cancel</button>`;
+  } else {
+    const g = by("gather")[0], cl = by("claim")[0], cr = by("clear"), rs = by("rest")[0];
+    h += `<button data-i="${g ? g.i : ""}" ${g ? "" : "disabled"}>Gather ink</button>`;
+    if (state.rest_effect === "cycle")
+      h += `<button data-rest="1" ${rs ? "" : "disabled"} title="Put a card from your hand on the bottom of your deck, then draw">Rest (cycle a card)</button>`;
+    else if (state.legal.some(a => a.kind === "rest") || state.you.deck_count === 0)
+      h += `<button data-i="${rs ? rs.i : ""}" ${rs ? "" : "disabled"} title="Spend an action to draw a card">Rest (draw a card)</button>`;
+    h += `<button data-i="${cl ? cl.i : ""}" ${cl ? "" : "disabled"}>Claim land</button>`;
+    h += `<button data-i="${cr.length ? cr[0].i : ""}" ${cr.length ? "" : "disabled"}>Clear enemy token${state.clear_free ? " (free)" : ""}</button>`;
+    h += `<span class="hint">Click a dot to move, or a highlighted card to cast.</span>`;
+  }
+  box.innerHTML = h;
+  box.querySelectorAll("button[data-i]").forEach(b => b.addEventListener("click", () => { if (b.dataset.i !== "") act(+b.dataset.i); }));
+  box.querySelectorAll("button[data-cancel]").forEach(b => b.addEventListener("click", () => { selected = null; resting = false; render(); }));
+  box.querySelectorAll("button[data-rest]").forEach(b => b.addEventListener("click", () => { if (!b.disabled) { resting = true; render(); } }));
+}
+
+function renderLog() {
+  const el = $("log");
+  el.innerHTML = state.log.map(e => e.kind === "turn"
+    ? `<div class="turn">${esc(e.text)}</div>`
+    : `<div class="${e.kind}"><span class="r">R${e.round}</span>${esc(e.text)}</div>`).join("");
+  el.scrollTop = el.scrollHeight;
+}
+
+let toastTimer = null;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+function render() {
+  if (!state || state.none) return;
+  $("tgt").textContent = state.target;
+  $("apt").textContent = state.actions_per_turn;
+  $("clearnote").textContent = state.clear_free ? " (free: costs no action)" : "";
+  $("restnote").textContent = state.rest_effect === "cycle" ? " (put a card from your hand on the bottom of your deck, then draw)" : " to draw a card";
+  $("status").textContent = state.over ? "Game over"
+    : state.my_turn ? `Round ${state.round} · your turn` : `Round ${state.round} · opponent's turn`;
+  $("sub").textContent = `vs the computer (${state.level})`;
+  const tb = $("turnbar");
+  tb.className = "turnbar " + (state.my_turn ? "mine" : "theirs");
+  tb.textContent = state.over ? "Game over" : state.my_turn
+    ? `Your turn: ${state.actions_left} action${state.actions_left === 1 ? "" : "s"} left`
+    : "Opponent's turn";
+  renderBoard(); renderSheet($("me"), state.you, true); renderSheet($("them"), state.opp, false);
+  renderHand(); renderActions(); renderLog();
+  if (state.over) showEnd();
+}
+
+function showEnd() {
+  const o = state.opp;
+  const how = state.wintype || "timeout";
+  const title = state.winner === "you" ? "You win!" : state.winner === "opp" ? "The computer wins" : "Draw";
+  $("end-body").innerHTML = `<h1>${title}</h1>
+    <p>${state.winner ? `By ${esc(how)}.` : ""} Round ${state.round}.</p>
+    <h2>Their sheet</h2>
+    <p><b>${esc(o.character)}</b> · ${esc(o.race)} (${esc(o.movement)}) · ${o.inks.map(i => pip(i) + " " + i).join(" ")} · ${o.max_hp} HP</p>
+    <p class="small">Fill in a feedback sheet (kit, last page), or note it in Design/tcg/playtests/.</p>
+    <button class="primary" id="btn-again">New game</button> <button id="btn-look">Look at the board</button>`;
+  $("end").style.display = "flex";
+  $("btn-again").onclick = () => { $("end").style.display = "none"; openStart(); };
+  $("btn-look").onclick = () => { $("end").style.display = "none"; };
+}
+
+async function act(i) {
+  if (busy) return;
+  busy = true; selected = null; resting = false;
+  $("status").textContent = "…";
+  state = await api("/api/act", {i});
+  busy = false;
+  render();
+}
+
+// ── start screen ───────────────────────────────────────────────────────────
+function radio(name, value, label, checked) {
+  return `<label><input type="radio" name="${name}" value="${value}" ${checked ? "checked" : ""}>${label}</label>`;
+}
+function openStart() {
+  $("pick-you").innerHTML = roster.map((r, n) => radio("you", r.name,
+    `<b>${r.name}</b><br><span class="small">${r.role} · ${r.race} (${r.movement}) · ${r.inks.join("/")} · ${r.hp} HP</span>`, n === 2)).join("");
+  $("pick-opp").innerHTML = radio("opp", "surprise", "<b>Surprise me</b><br><span class='small'>hidden until revealed in play</span>", true)
+    + roster.map(r => radio("opp", r.name, `<b>${r.name}</b><br><span class="small">${r.role}</span>`, false)).join("");
+  $("pick-level").innerHTML = ["easy", "normal", "hard"].map(l => radio("level", l,
+    `<b>${l[0].toUpperCase() + l.slice(1)}</b><br><span class="small">${{easy: "often makes loose moves", normal: "plays its best move each turn", hard: "plans around your reply"}[l]}</span>`,
+    l === "normal")).join("");
+  $("start").style.display = "flex";
+}
+$("btn-start").onclick = async () => {
+  const you = document.querySelector("input[name=you]:checked").value;
+  const opp = document.querySelector("input[name=opp]:checked").value;
+  const level = document.querySelector("input[name=level]:checked").value;
+  if (opp === you) { alert("Pick a different opponent (or Surprise me)."); return; }
+  $("start").style.display = "none";
+  $("status").textContent = "Building the board…";
+  state = await api("/api/new", {you, opp, level});
+  selected = null;
+  render();
+};
+$("btn-new").onclick = openStart;
+
+(async () => {
+  roster = (await api("/api/roster")).roster;
+  state = await api("/api/state");
+  if (!state || state.none) openStart(); else render();
+})();
+</script>
+</body>
+</html>

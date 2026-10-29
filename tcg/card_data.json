@@ -1,0 +1,1990 @@
+{
+  "schema_version": 1,
+  "note": "Canonical TCG card data. The printed kit (tcg_playtest/build_kit.py) and the simulator read this file; the Godot video game should too. Rules live in RULES.md; the reasoning behind every value lives in TCG_DESIGN.md.",
+  "rules": {
+    "holding_target": 15,
+    "actions_per_turn": 2,
+    "clear_free": true,
+    "rest": true,
+    "rest_effect": "cycle",
+    "lands_upright": true,
+    "sight_blockers": [],
+    "deck_size": 20,
+    "opening_hand": 5,
+    "draw_per_turn": 1,
+    "max_copies": 3,
+    "signature_copies": 1,
+    "terrain_per_player": 9,
+    "reactions_per_opponent_turn": 1,
+    "own_ink_move_bonus": 1,
+    "gather_own_ink": 2,
+    "gather_other_ink": 1,
+    "deck_out": "Once both decks are empty, finish the round; most holding points wins. Ties: most lands holding your token, then higher share of max HP, then a draw."
+  },
+  "inks": [
+    {
+      "name": "White",
+      "shape": "square"
+    },
+    {
+      "name": "Red",
+      "shape": "triangle"
+    },
+    {
+      "name": "Orange",
+      "shape": "diamond"
+    },
+    {
+      "name": "Yellow",
+      "shape": "spark"
+    },
+    {
+      "name": "Green",
+      "shape": "disc"
+    },
+    {
+      "name": "Blue",
+      "shape": "eye"
+    },
+    {
+      "name": "Indigo",
+      "shape": "crescent"
+    },
+    {
+      "name": "Purple",
+      "shape": "hex"
+    },
+    {
+      "name": "Pink",
+      "shape": "heart"
+    }
+  ],
+  "terrains": {
+    "Plains": {
+      "rough": false
+    },
+    "Desert": {
+      "rough": false
+    },
+    "Civilization": {
+      "rough": false
+    },
+    "Forest": {
+      "rough": true
+    },
+    "Mountain": {
+      "rough": true
+    },
+    "Marsh": {
+      "rough": true
+    }
+  },
+  "centre_land": {
+    "inks": [
+      "Wild",
+      "Wild"
+    ],
+    "terrain": "Plains",
+    "claimable": true,
+    "wild_gather": "1 generic ink"
+  },
+  "races": {
+    "Shellback": {
+      "movement": "Guard",
+      "movement_text": "1 square in any direction.",
+      "hp": 80,
+      "trait": {
+        "name": "Rooted",
+        "text": "On a turn you did not move, take 5 less damage from each Attack.",
+        "kind": "always"
+      },
+      "profile": {
+        "role": "Tank",
+        "durability": 5,
+        "sustain": 5,
+        "mobility": 1,
+        "damage": 2,
+        "holding": 3,
+        "control": 2,
+        "win_path": "Knockout by attrition; anchors the centre"
+      },
+      "placeholder_name": true
+    },
+    "Wisp": {
+      "movement": "Blink",
+      "movement_text": "Teleport to a square exactly 2 away in a straight or diagonal line, ignoring anything in between and ignoring rough terrain.",
+      "hp": 40,
+      "trait": {
+        "name": "Light-fingered",
+        "text": "While you hold 2 or more lands, score 1 extra holding point at the start of your turn.",
+        "kind": "always",
+        "hold_bonus": 1,
+        "hold_min_lands": 2
+      },
+      "profile": {
+        "role": "Thief",
+        "durability": 1,
+        "sustain": 1,
+        "mobility": 5,
+        "damage": 1,
+        "holding": 5,
+        "control": 3,
+        "win_path": "Holding only"
+      },
+      "placeholder_name": true
+    },
+    "Ramhorn": {
+      "movement": "Burst",
+      "movement_text": "1 square in any direction, or exactly 3 squares in a straight or diagonal line. Entering rough terrain still ends the move.",
+      "hp": 45,
+      "trait": {
+        "name": "Momentum",
+        "text": "After you move 3 or more squares in a straight line, your next Attack this turn deals +6 damage.",
+        "kind": "always"
+      },
+      "profile": {
+        "role": "Striker",
+        "durability": 2,
+        "sustain": 1,
+        "mobility": 4,
+        "damage": 5,
+        "holding": 2,
+        "control": 1,
+        "win_path": "Knockout"
+      },
+      "placeholder_name": true
+    },
+    "Skimmer": {
+      "movement": "Glide",
+      "movement_text": "Up to 3 squares diagonally, or 1 square straight. Entering rough terrain ends the move.",
+      "hp": 65,
+      "trait": {
+        "name": "Watchful",
+        "text": "Your reaction spells have +1 range.",
+        "kind": "always"
+      },
+      "profile": {
+        "role": "Controller",
+        "durability": 2,
+        "sustain": 1,
+        "mobility": 3,
+        "damage": 3,
+        "holding": 3,
+        "control": 5,
+        "win_path": "Either, by denial"
+      },
+      "placeholder_name": true
+    },
+    "Ambler": {
+      "movement": "Stride",
+      "movement_text": "Up to 2 squares in any direction, turning allowed.",
+      "hp": 60,
+      "trait": {
+        "name": "Steady",
+        "text": "The first time each turn that entering rough terrain would end your move, it doesn't.",
+        "kind": "always"
+      },
+      "profile": {
+        "role": "Skirmisher",
+        "durability": 3,
+        "sustain": 2,
+        "mobility": 3,
+        "damage": 3,
+        "holding": 3,
+        "control": 2,
+        "win_path": "Either, best at neither"
+      },
+      "placeholder_name": true
+    }
+  },
+  "characters": [
+    {
+      "name": "Thornback",
+      "role": "a Green/Green tank",
+      "race": "Shellback",
+      "inks": [
+        "Green",
+        "Green"
+      ],
+      "signature": "TB-09",
+      "placeholder_name": true,
+      "deck": [
+        [
+          "TB-01",
+          3
+        ],
+        [
+          "TB-02",
+          3
+        ],
+        [
+          "TB-03",
+          2
+        ],
+        [
+          "TB-04",
+          2
+        ],
+        [
+          "TB-05",
+          3
+        ],
+        [
+          "TB-06",
+          3
+        ],
+        [
+          "TB-07",
+          2
+        ],
+        [
+          "TB-08",
+          1
+        ],
+        [
+          "TB-09",
+          1
+        ]
+      ],
+      "terrain_half": [
+        {
+          "inks": [
+            "Green",
+            "Green"
+          ],
+          "terrain": "Forest",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Green",
+            "White"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Green",
+            "Yellow"
+          ],
+          "terrain": "Plains",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Green",
+            "Blue"
+          ],
+          "terrain": "Marsh",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Green",
+            "Orange"
+          ],
+          "terrain": "Mountain",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Pink",
+            "Green"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "White",
+            "Yellow"
+          ],
+          "terrain": "Desert",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Green",
+            "Purple"
+          ],
+          "terrain": "Civilization",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Green",
+            "Green"
+          ],
+          "terrain": "Forest",
+          "claimable": false,
+          "star": 0
+        }
+      ]
+    },
+    {
+      "name": "Skitterwisp",
+      "role": "a Red/Blue token thief",
+      "race": "Wisp",
+      "inks": [
+        "Red",
+        "Blue"
+      ],
+      "signature": "SW-10",
+      "placeholder_name": true,
+      "deck": [
+        [
+          "SW-01",
+          3
+        ],
+        [
+          "SW-02",
+          2
+        ],
+        [
+          "SW-03",
+          3
+        ],
+        [
+          "SW-04",
+          2
+        ],
+        [
+          "SW-05",
+          3
+        ],
+        [
+          "SW-06",
+          1
+        ],
+        [
+          "SW-07",
+          2
+        ],
+        [
+          "SW-08",
+          2
+        ],
+        [
+          "SW-09",
+          1
+        ],
+        [
+          "SW-10",
+          1
+        ]
+      ],
+      "terrain_half": [
+        {
+          "inks": [
+            "Red",
+            "Blue"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Red",
+            "Red"
+          ],
+          "terrain": "Desert",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Blue",
+            "Blue"
+          ],
+          "terrain": "Marsh",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Red",
+            "Orange"
+          ],
+          "terrain": "Mountain",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Blue",
+            "Indigo"
+          ],
+          "terrain": "Civilization",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Red",
+            "Yellow"
+          ],
+          "terrain": "Desert",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Blue",
+            "Purple"
+          ],
+          "terrain": "Plains",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Indigo",
+            "Pink"
+          ],
+          "terrain": "Forest",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Red",
+            "Blue"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": 0
+        }
+      ]
+    },
+    {
+      "name": "Brasshorn",
+      "role": "a Yellow/Orange striker",
+      "race": "Ramhorn",
+      "inks": [
+        "Yellow",
+        "Orange"
+      ],
+      "signature": "BH-09",
+      "placeholder_name": true,
+      "deck": [
+        [
+          "BH-01",
+          3
+        ],
+        [
+          "BH-02",
+          3
+        ],
+        [
+          "BH-03",
+          3
+        ],
+        [
+          "BH-04",
+          3
+        ],
+        [
+          "BH-05",
+          2
+        ],
+        [
+          "BH-06",
+          2
+        ],
+        [
+          "BH-07",
+          2
+        ],
+        [
+          "BH-08",
+          1
+        ],
+        [
+          "BH-09",
+          1
+        ]
+      ],
+      "terrain_half": [
+        {
+          "inks": [
+            "Yellow",
+            "Orange"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Yellow",
+            "Yellow"
+          ],
+          "terrain": "Desert",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Orange",
+            "Orange"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Yellow",
+            "Red"
+          ],
+          "terrain": "Mountain",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Orange",
+            "White"
+          ],
+          "terrain": "Civilization",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Yellow",
+            "Green"
+          ],
+          "terrain": "Forest",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Orange",
+            "Pink"
+          ],
+          "terrain": "Desert",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Yellow",
+            "Blue"
+          ],
+          "terrain": "Marsh",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Orange",
+            "Yellow"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": 0
+        }
+      ]
+    },
+    {
+      "name": "Vigilux",
+      "role": "a White/Indigo controller",
+      "race": "Skimmer",
+      "inks": [
+        "White",
+        "Indigo"
+      ],
+      "signature": "VX-09",
+      "placeholder_name": true,
+      "deck": [
+        [
+          "VX-01",
+          3
+        ],
+        [
+          "VX-02",
+          3
+        ],
+        [
+          "VX-03",
+          3
+        ],
+        [
+          "VX-04",
+          3
+        ],
+        [
+          "VX-05",
+          2
+        ],
+        [
+          "VX-06",
+          2
+        ],
+        [
+          "VX-07",
+          2
+        ],
+        [
+          "VX-08",
+          1
+        ],
+        [
+          "VX-09",
+          1
+        ]
+      ],
+      "terrain_half": [
+        {
+          "inks": [
+            "White",
+            "Indigo"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "White",
+            "White"
+          ],
+          "terrain": "Mountain",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Indigo",
+            "Indigo"
+          ],
+          "terrain": "Forest",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "White",
+            "Blue"
+          ],
+          "terrain": "Civilization",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Indigo",
+            "Purple"
+          ],
+          "terrain": "Marsh",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "White",
+            "Green"
+          ],
+          "terrain": "Desert",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Indigo",
+            "Red"
+          ],
+          "terrain": "Plains",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "White",
+            "Yellow"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Indigo",
+            "White"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": 0
+        }
+      ]
+    },
+    {
+      "name": "Petalstep",
+      "role": "a Pink/Purple skirmisher",
+      "race": "Ambler",
+      "inks": [
+        "Pink",
+        "Purple"
+      ],
+      "signature": "PS-09",
+      "placeholder_name": true,
+      "deck": [
+        [
+          "PS-01",
+          3
+        ],
+        [
+          "PS-02",
+          3
+        ],
+        [
+          "PS-03",
+          1
+        ],
+        [
+          "PS-04",
+          3
+        ],
+        [
+          "PS-05",
+          3
+        ],
+        [
+          "PS-06",
+          3
+        ],
+        [
+          "PS-07",
+          3
+        ],
+        [
+          "PS-09",
+          1
+        ]
+      ],
+      "terrain_half": [
+        {
+          "inks": [
+            "Pink",
+            "Purple"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Pink",
+            "Pink"
+          ],
+          "terrain": "Forest",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Purple",
+            "Purple"
+          ],
+          "terrain": "Civilization",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Pink",
+            "Orange"
+          ],
+          "terrain": "Desert",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Purple",
+            "Indigo"
+          ],
+          "terrain": "Marsh",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Pink",
+            "White"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Purple",
+            "Green"
+          ],
+          "terrain": "Mountain",
+          "claimable": true,
+          "star": null
+        },
+        {
+          "inks": [
+            "Pink",
+            "Blue"
+          ],
+          "terrain": "Desert",
+          "claimable": false,
+          "star": null
+        },
+        {
+          "inks": [
+            "Purple",
+            "Pink"
+          ],
+          "terrain": "Plains",
+          "claimable": false,
+          "star": 0
+        }
+      ]
+    }
+  ],
+  "spells": [
+    {
+      "id": "TB-01",
+      "name": "Leech Bite",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Green"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 1,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 1",
+      "trigger": null,
+      "text": "Deal 8 damage and heal 8.",
+      "art_ink": "Green",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Green"
+      },
+      "damage": 8,
+      "heal": 8
+    },
+    {
+      "id": "TB-02",
+      "name": "Thornlash",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Green"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 2, line of sight",
+      "trigger": null,
+      "text": "Deal 8 damage.",
+      "art_ink": "Green",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Green"
+      },
+      "damage": 8
+    },
+    {
+      "id": "TB-03",
+      "name": "Overgrowth",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Green",
+          "Green"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 2, line of sight",
+      "trigger": null,
+      "text": "Deal 12 damage and heal 12.",
+      "art_ink": "Green",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Green"
+      },
+      "damage": 12,
+      "heal": 12
+    },
+    {
+      "id": "TB-04",
+      "name": "Mend",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Green"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Defence",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Heal 15. If you are at full HP, gain 3 Green ink instead.",
+      "art_ink": "Green",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Green"
+      }
+    },
+    {
+      "id": "TB-05",
+      "name": "Wellspring",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Green"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Gathering",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Gain 1 Green ink, plus 1 Green ink for each adjacent square that is one of your inks.",
+      "art_ink": "Green",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Green"
+      }
+    },
+    {
+      "id": "TB-06",
+      "name": "Snapvine",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Green"
+        ]
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 2, line of sight",
+      "trigger": "An opponent leaves a square within range.",
+      "text": "Their current move action ends on the next square they enter.",
+      "art_ink": "Green",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Green"
+      }
+    },
+    {
+      "id": "TB-07",
+      "name": "Brace",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": {
+        "kind": "race",
+        "value": "Shellback"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": "You are targeted by an Attack spell.",
+      "text": "Reduce that spell's damage to you by 12.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Shellback"
+      },
+      "prevent": 12
+    },
+    {
+      "id": "TB-08",
+      "name": "Stand Fast",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Sorcery",
+      "type": "Claim",
+      "restriction": {
+        "kind": "race",
+        "value": "Shellback"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Claim the land you stand on, replacing an opponent's token. Score 1 holding point.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Shellback"
+      }
+    },
+    {
+      "id": "TB-09",
+      "name": "Bramble Bastion",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Green",
+          "Green"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Signature",
+      "restriction": {
+        "kind": "signature",
+        "value": "Thornback"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Heal 10. Until your next turn, any opponent who ends a move within 2 squares of you takes 10 damage.",
+      "art_ink": "Green",
+      "video_game_unlock": {
+        "source": "bond",
+        "character": "Thornback"
+      }
+    },
+    {
+      "id": "SW-01",
+      "name": "Ember Bolt",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Red"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 3,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 3, line of sight",
+      "trigger": null,
+      "text": "Deal 12 damage.",
+      "art_ink": "Red",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Red"
+      },
+      "damage": 12
+    },
+    {
+      "id": "SW-02",
+      "name": "Cinder Burst",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Red",
+          "Red"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 2, line of sight",
+      "trigger": null,
+      "text": "Deal 14 damage. +6 if the target stands on rough terrain.",
+      "art_ink": "Red",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Red"
+      },
+      "damage": 14
+    },
+    {
+      "id": "SW-03",
+      "name": "Parting Spark",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Red"
+        ]
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": null,
+      "range": 3,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 3, line of sight",
+      "trigger": "An opponent leaves a square within range.",
+      "text": "Deal 6 damage.",
+      "art_ink": "Red",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Red"
+      }
+    },
+    {
+      "id": "SW-04",
+      "name": "Tide Step",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Blue"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Move up to 3 squares in any direction, ignoring rough terrain. Then claim the land you end on if it is claimable and has no token.",
+      "art_ink": "Blue",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Blue"
+      }
+    },
+    {
+      "id": "SW-05",
+      "name": "Uproot",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Blue"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Claim",
+      "restriction": null,
+      "range": 5,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 5",
+      "trigger": null,
+      "text": "Remove an opponent's token from a land within range.",
+      "art_ink": "Blue",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Blue"
+      }
+    },
+    {
+      "id": "SW-06",
+      "name": "Stake the Ground",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Blue"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Claim",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 2",
+      "trigger": null,
+      "text": "Place your token on a claimable land within range, removing an opponent's token if one is there.",
+      "art_ink": "Blue",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Blue"
+      }
+    },
+    {
+      "id": "SW-07",
+      "name": "Telltale",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Blue"
+        ]
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": null,
+      "range": 3,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 3, line of sight",
+      "trigger": "An opponent leaves a square within range.",
+      "text": "They reveal one face-down slot of their sheet. You choose which.",
+      "art_ink": "Blue",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Blue"
+      }
+    },
+    {
+      "id": "SW-08",
+      "name": "Afterimage",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": {
+        "kind": "race",
+        "value": "Wisp"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": "You are targeted by an Attack spell.",
+      "text": "Blink. If you are now out of the spell's range or line of sight, it has no effect.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Wisp"
+      }
+    },
+    {
+      "id": "SW-09",
+      "name": "Skip",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": {
+        "kind": "race",
+        "value": "Wisp"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Blink, then Blink again.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Wisp"
+      }
+    },
+    {
+      "id": "SW-10",
+      "name": "Flicker Theft",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Blue"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Signature",
+      "restriction": {
+        "kind": "signature",
+        "value": "Skitterwisp"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Blink. Then move a token from a land within 2 squares onto the land you stand on, if it is claimable.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "bond",
+        "character": "Skitterwisp"
+      }
+    },
+    {
+      "id": "BH-01",
+      "name": "Gore",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Yellow"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 1,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 1",
+      "trigger": null,
+      "text": "Deal 12 damage.",
+      "art_ink": "Yellow",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Yellow"
+      },
+      "damage": 12
+    },
+    {
+      "id": "BH-02",
+      "name": "Spark Lance",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Yellow"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 3,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 3, line of sight",
+      "trigger": null,
+      "text": "Deal 8 damage.",
+      "art_ink": "Yellow",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Yellow"
+      },
+      "damage": 8
+    },
+    {
+      "id": "BH-03",
+      "name": "Rampage",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Orange"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 1,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 1",
+      "trigger": null,
+      "text": "Deal 16 damage.",
+      "art_ink": "Orange",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Orange"
+      },
+      "damage": 16
+    },
+    {
+      "id": "BH-04",
+      "name": "Trample",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Orange"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Move up to 3 squares in a straight line; rough terrain doesn't stop you. If you end adjacent to an opponent, deal 6 damage.",
+      "art_ink": "Orange",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Orange"
+      }
+    },
+    {
+      "id": "BH-05",
+      "name": "Kindle",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Yellow"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Gathering",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Gain 2 Yellow ink and 1 Orange ink.",
+      "art_ink": "Yellow",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Yellow"
+      }
+    },
+    {
+      "id": "BH-06",
+      "name": "Counterhorn",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Orange"
+        ]
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": null,
+      "range": 1,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Adjacent",
+      "trigger": "An opponent ends a move adjacent to you.",
+      "text": "Deal 8 damage.",
+      "art_ink": "Orange",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Orange"
+      }
+    },
+    {
+      "id": "BH-07",
+      "name": "Headlong",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": {
+        "kind": "race",
+        "value": "Ramhorn"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Move up to 3 squares in a straight line, then 1 more square in any direction. Your next Attack this turn deals +6 damage.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Ramhorn"
+      }
+    },
+    {
+      "id": "BH-08",
+      "name": "Stampede",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Sorcery",
+      "type": "Claim",
+      "restriction": {
+        "kind": "race",
+        "value": "Ramhorn"
+      },
+      "range": 2,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 2",
+      "trigger": null,
+      "text": "Remove an opponent's token from a land within range. If it is the land you stand on, claim it.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Ramhorn"
+      }
+    },
+    {
+      "id": "BH-09",
+      "name": "Thunderclap Charge",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Yellow",
+          "Orange"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Signature",
+      "restriction": {
+        "kind": "signature",
+        "value": "Brasshorn"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Move up to 4 squares in a straight line, ignoring rough terrain. Then deal 18 damage to an adjacent opponent.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "bond",
+        "character": "Brasshorn"
+      }
+    },
+    {
+      "id": "VX-01",
+      "name": "Ward Lance",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "White"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 3,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 3, line of sight",
+      "trigger": null,
+      "text": "Deal 10 damage.",
+      "art_ink": "White",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "White"
+      },
+      "damage": 10
+    },
+    {
+      "id": "VX-02",
+      "name": "Shadow Needle",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Indigo"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 4,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 4, line of sight",
+      "trigger": null,
+      "text": "Deal 9 damage.",
+      "art_ink": "Indigo",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Indigo"
+      },
+      "damage": 9
+    },
+    {
+      "id": "VX-03",
+      "name": "Lockstep",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Indigo"
+        ]
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 2, line of sight",
+      "trigger": "An opponent leaves a square within range.",
+      "text": "Their current move action ends on the next square they enter. Deal 4 damage.",
+      "art_ink": "Indigo",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Indigo"
+      }
+    },
+    {
+      "id": "VX-04",
+      "name": "Sentinel Mark",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "White"
+        ]
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": null,
+      "range": 3,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 3",
+      "trigger": "An opponent claims a land within range.",
+      "text": "Turn that token face down: it scores nothing at their next scoring, then turn it back up.",
+      "art_ink": "White",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "White"
+      }
+    },
+    {
+      "id": "VX-05",
+      "name": "Veil Step",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Indigo"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Move up to 3 squares in any direction, ignoring rough terrain.",
+      "art_ink": "Indigo",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Indigo"
+      }
+    },
+    {
+      "id": "VX-06",
+      "name": "Hold the Lane",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "White"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Claim",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 2",
+      "trigger": null,
+      "text": "Claim a claimable land within range that has no token.",
+      "art_ink": "White",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "White"
+      }
+    },
+    {
+      "id": "VX-07",
+      "name": "Crosswind",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": {
+        "kind": "race",
+        "value": "Skimmer"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Glide, then Glide again.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Skimmer"
+      }
+    },
+    {
+      "id": "VX-08",
+      "name": "Lane Watch",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": {
+        "kind": "race",
+        "value": "Skimmer"
+      },
+      "range": 3,
+      "line_of_sight": false,
+      "shape": "diagonal",
+      "range_text": "Range 3, diagonal",
+      "trigger": "An opponent ends a move on one of your diagonals within range.",
+      "text": "Deal 8 damage.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Skimmer"
+      }
+    },
+    {
+      "id": "VX-09",
+      "name": "Judgment of Lanes",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "White",
+          "Indigo"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Signature",
+      "restriction": {
+        "kind": "signature",
+        "value": "Vigilux"
+      },
+      "range": null,
+      "line_of_sight": true,
+      "shape": "diagonal",
+      "range_text": "Any diagonal, line of sight",
+      "trigger": null,
+      "text": "Deal 14 damage to an opponent on one of your diagonals.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "bond",
+        "character": "Vigilux"
+      }
+    },
+    {
+      "id": "PS-01",
+      "name": "Heartsting",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Pink"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 2, line of sight",
+      "trigger": null,
+      "text": "Deal 7 damage.",
+      "art_ink": "Pink",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Pink"
+      },
+      "damage": 7
+    },
+    {
+      "id": "PS-02",
+      "name": "Edict",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Purple"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Attack",
+      "restriction": null,
+      "range": 3,
+      "line_of_sight": true,
+      "shape": "any",
+      "range_text": "Range 3, line of sight",
+      "trigger": null,
+      "text": "Deal 11 damage.",
+      "art_ink": "Purple",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Purple"
+      },
+      "damage": 11
+    },
+    {
+      "id": "PS-03",
+      "name": "Decree",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Purple"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Claim",
+      "restriction": null,
+      "range": 2,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 2",
+      "trigger": null,
+      "text": "Claim a claimable land within range that has no token.",
+      "art_ink": "Purple",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Purple"
+      }
+    },
+    {
+      "id": "PS-04",
+      "name": "Courtly Step",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Purple"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Move up to 2 squares, then heal 4.",
+      "art_ink": "Purple",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Purple"
+      }
+    },
+    {
+      "id": "PS-05",
+      "name": "Mend Bloom",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Pink"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Defence",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Heal 10. If you are at full HP, gain 2 Pink ink instead.",
+      "art_ink": "Pink",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Pink"
+      }
+    },
+    {
+      "id": "PS-06",
+      "name": "Guarded Heart",
+      "cost": {
+        "generic": 0,
+        "pips": [
+          "Pink"
+        ]
+      },
+      "speed": "Instant",
+      "type": "Reaction",
+      "restriction": null,
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": "You are targeted by an Attack spell.",
+      "text": "Reduce that spell's damage to you by 5.",
+      "art_ink": "Pink",
+      "video_game_unlock": {
+        "source": "witness",
+        "ink": "Pink"
+      },
+      "prevent": 5
+    },
+    {
+      "id": "PS-07",
+      "name": "Second Wind",
+      "cost": {
+        "generic": 1,
+        "pips": []
+      },
+      "speed": "Sorcery",
+      "type": "Movement",
+      "restriction": {
+        "kind": "race",
+        "value": "Ambler"
+      },
+      "range": null,
+      "line_of_sight": false,
+      "shape": "self",
+      "range_text": "Self",
+      "trigger": null,
+      "text": "Move up to 2 squares, ignoring rough terrain. Your next Attack this turn deals +6 damage.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "race_scan",
+        "race": "Ambler"
+      }
+    },
+    {
+      "id": "PS-09",
+      "name": "Bloomcrown",
+      "cost": {
+        "generic": 1,
+        "pips": [
+          "Pink",
+          "Purple"
+        ]
+      },
+      "speed": "Sorcery",
+      "type": "Signature",
+      "restriction": {
+        "kind": "signature",
+        "value": "Petalstep"
+      },
+      "range": 2,
+      "line_of_sight": false,
+      "shape": "any",
+      "range_text": "Range 2",
+      "trigger": null,
+      "text": "Claim the land you stand on if it is claimable, replacing an opponent's token. Deal 12 damage to an opponent within range.",
+      "art_ink": null,
+      "video_game_unlock": {
+        "source": "bond",
+        "character": "Petalstep"
+      }
+    }
+  ]
+}
